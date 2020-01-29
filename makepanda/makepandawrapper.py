@@ -275,6 +275,10 @@ def gen_config(cmakedir, cli_args):
     if cli_args.static:
         args.append('-DBUILD_SHARED_LIBS=OFF')
 
+    # Env vars
+    if 'MAKEPANDA_THIRDPARTY' in os.environ:
+        args.append('-DTHIRDPARTY_DIRECTORY={}'.format(os.environ['MAKEPANDA_THIRDPARTY']))
+
     if cli_args.verbose:
         print('cmake config command:')
         pprint.pprint(args)
