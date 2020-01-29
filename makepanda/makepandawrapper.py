@@ -10,9 +10,14 @@ import subprocess
 import sys
 import time
 
-
 # If/when makepanda goes away, we can copy these functions over to this script
 from makepandacore import DXVERSIONS, MAYAVERSIONS, MAXVERSIONS
+
+
+SCRIPTDIR = os.path.join(
+    os.path.dirname(os.path.abspath(__file__))
+)
+
 
 PKG_LIST = [
     "PYTHON", "DIRECT",                                  # Python support
@@ -139,7 +144,7 @@ def parse_args():
     parser.add_argument('--verbose', action='store_true')
     parser.add_argument('--tests', action='store_true')
     # parser.add_argument('--installer', action='store_true')
-    # parser.add_argument('--wheel', action='store_true')
+    parser.add_argument('--wheel', action='store_true')
     parser.add_argument('--optimize', type=int, choices=(1, 2, 3, 4), default=3)
     # parser.add_argument('--lzma', action='store_true')
     parser.add_argument('--distributor', default='makepanda')
@@ -307,6 +312,25 @@ def run_tests(cmakedir, cli_args):
     subprocess.check_call(args)
 
 
+def make_wheel(cmakedir, cli_args):
+    print('Building wheel...')
+    os.chdir(os.path.join(SCRIPTDIR, '..'))
+    args = [
+        sys.executable,
+        os.path.join(
+            SCRIPTDIR,
+            'makewheel.py'
+        ),
+        '--outputdir', cmakedir
+    ]
+
+    if cli_args.verbose:
+        print('make_wheel command:')
+        pprint.pprint(args)
+
+    subprocess.check_call(args)
+
+
 def main():
     args = parse_args()
 
@@ -327,6 +351,9 @@ def main():
 
     if args.tests:
         run_tests(cmakedir, args)
+
+    if args.wheel:
+        make_wheel(cmakedir, args)
 
     deltatime = datetime.timedelta(seconds=round(time.perf_counter() - starttime))
     print('Build completed in {}'.format(deltatime))
