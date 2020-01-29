@@ -145,11 +145,11 @@ def parse_args():
     parser.add_argument('--distributor', default='makepanda')
     # parser.add_argument('--outputdir', 'built')
     parser.add_argument('--threads', type=int)
-    # parser.add_argument('--osxtarget')
+    parser.add_argument('--osxtarget')
     # parser.add_argument('--override', action='append')
-    # parser.add_argument('--static', action='store_true')
+    parser.add_argument('--static', action='store_true')
     # parser.add_argument('--target')
-    # parser.add_argument('--arch')
+    parser.add_argument('--arch')
     parser.add_argument('--nothing', action='store_true')
     parser.add_argument('--everything', action='store_true')
     # parser.add_argument('--directx-sdk')
@@ -212,7 +212,11 @@ def gen_config(cmakedir, cli_args):
         '../',
     ]
 
-    if sys.platform == 'win32' and platform.architecture()[0] == '64bit':
+    if cli_args.arch:
+        args += [
+            '-A', 'x64'
+        ]
+    elif sys.platform == 'win32' and platform.architecture()[0] == '64bit':
         args += [
             '-A', 'x64'
         ]
@@ -258,6 +262,12 @@ def gen_config(cmakedir, cli_args):
     # Other CLI args
     if cli_args.distributor:
         args.append('-DPANDA_DISTRIBUTOR={}'.format(cli_args.distributor))
+
+    if cli_args.osxtarget:
+        args.append('-DCMAKE_OSX_DEPLOYMENT_TARGET={}'.format(cli_args.osxtarget))
+
+    if cli_args.static:
+        args.append('-DBUILD_SHARED_LIBS=OFF')
 
     if cli_args.verbose:
         print('cmake config command:')
