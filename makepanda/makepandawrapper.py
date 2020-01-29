@@ -215,6 +215,7 @@ def gen_config(cmakedir, cli_args):
     args = [
         'cmake',
         '../',
+        '-DWANT_PYTHON_VERSION={}'.format('.'.join([str(i) for i in sys.version_info[0:2]])),
     ]
 
     if cli_args.arch:
