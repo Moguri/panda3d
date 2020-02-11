@@ -270,18 +270,12 @@ def gen_config(cmakedir, cli_args):
     ]
 
     # Other CLI args
-    if cli_args.distributor:
-        args.append('-DPANDA_DISTRIBUTOR={}'.format(cli_args.distributor))
-
-    if cli_args.osxtarget:
-        args.append('-DCMAKE_OSX_DEPLOYMENT_TARGET={}'.format(cli_args.osxtarget))
-
-    if cli_args.static:
-        args.append('-DBUILD_SHARED_LIBS=OFF')
+    args.append('-DPANDA_DISTRIBUTOR={}'.format(cli_args.distributor or ''))
+    args.append('-DCMAKE_OSX_DEPLOYMENT_TARGET={}'.format(cli_args.osxtarget or ''))
+    args.append('-DBUILD_SHARED_LIBS={}'.format('ON' if cli_args.static else 'OFF'))
 
     # Env vars
-    if 'MAKEPANDA_THIRDPARTY' in os.environ:
-        args.append('-DTHIRDPARTY_DIRECTORY={}'.format(os.environ['MAKEPANDA_THIRDPARTY']))
+    args.append('-DTHIRDPARTY_DIRECTORY={}'.format(os.environ.get('MAKEPANDA_THIRDPARTY', '')))
 
     if cli_args.verbose:
         print('cmake config command:')
